@@ -133,3 +133,45 @@ function setMeaningfulMobileNavIcons(){const paths=['<path d="M5 5h10a4 4 0 0 1 
 (()=>{const applyRentalNav=()=>{const lang=localStorage.getItem('wcs-lang')||'ru',labels={ru:'Аренда спецтехники',kz:'Арнайы техниканы жалға беру',en:'Special equipment rental'};document.querySelectorAll('.header .nav').forEach(nav=>{const link=[...nav.querySelectorAll('a')].find(a=>a.getAttribute('href')==='corporate.html'||a.dataset.i18n==='navCorporate');if(link){link.href='index.html#special-equipment-service';link.dataset.i18n='navRental';const desktop=link.querySelector('.desktop-nav-label'),mobile=link.querySelector('.mobile-nav-label');if(desktop)desktop.textContent=labels[lang];if(mobile)mobile.textContent=labels[lang];else link.textContent=labels[lang]}})};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyRentalNav,{once:true});else applyRentalNav();document.addEventListener('click',e=>{if(e.target.closest('[data-lang]'))setTimeout(applyRentalNav,180)})})();
 (()=>{const markRental=()=>{const section=document.querySelector('[data-special-equipment-service]');if(section)section.id='special-equipment-service'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',markRental,{once:true});else markRental()})();
 (()=>{const syncFinalBrandAndNav=()=>{document.querySelectorAll('.brand img,.admin-brand img,.admin-login .brand img').forEach(img=>{img.src='assets/west-training-logo.webp';img.loading='eager';img.decoding='async';img.alt='West Training Center & Services'});const lang=localStorage.getItem('wcs-lang')||'ru',label={ru:'Аренда спецтехники',kz:'Арнайы техниканы жалға беру',en:'Special equipment rental'}[lang]||'Аренда спецтехники';document.querySelectorAll('.header .nav').forEach(nav=>{const links=[...nav.querySelectorAll('a')],rental=links.find(a=>a.href.includes('corporate.html')||a.dataset.i18n==='navCorporate'||a.href.includes('special-equipment-service'))||links[3];if(!rental)return;rental.href='index.html#special-equipment-service';rental.dataset.i18n='navRental';const desktop=rental.querySelector('.desktop-nav-label'),mobile=rental.querySelector('.mobile-nav-label');if(desktop)desktop.textContent=label;if(mobile)mobile.textContent=label;if(!desktop&&!mobile)rental.textContent=label;links.filter(a=>a!==rental&&a.dataset.i18n==='navCorporate').forEach(a=>a.remove())})};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',syncFinalBrandAndNav,{once:true});else syncFinalBrandAndNav();[100,600,1200,1800].forEach(delay=>setTimeout(syncFinalBrandAndNav,delay));document.addEventListener('click',e=>{if(e.target.closest('[data-lang]'))[100,500,1200].forEach(delay=>setTimeout(syncFinalBrandAndNav,delay))})})();
+
+// Final branding lock: legacy navigation routines must not restore the old corporate item.
+(()=>{
+  const labels={
+    ru:{courses:'Курсы',about:'О компании',docs:'Лицензии',rental:'Аренда спецтехники',contacts:'Контакты',reviews:'Отзывы'},
+    kz:{courses:'Курстар',about:'Компания туралы',docs:'Лицензиялар',rental:'Арнайы техниканы жалға беру',contacts:'Байланыс',reviews:'Пікірлер'},
+    en:{courses:'Courses',about:'About us',docs:'Licences',rental:'Special equipment rental',contacts:'Contacts',reviews:'Reviews'}
+  };
+  const items=[['courses.html','courses'],['about.html','about'],['documents.html','docs'],['index.html#special-equipment-service','rental'],['contacts.html','contacts'],['reviews.html','reviews']];
+  const sync=()=>{
+    const copy=labels[localStorage.getItem('wcs-lang')||'ru']||labels.ru;
+    document.querySelectorAll('.brand img,.admin-brand img,.admin-login .brand img').forEach(img=>{
+      if(img.src!==new URL('assets/west-training-logo.webp',location.href).href)img.src='assets/west-training-logo.webp';
+      img.loading='eager';img.decoding='async';img.alt='West Training Center & Services';
+    });
+    document.querySelectorAll('.header .brand img').forEach(img=>{img.style.width='225px';img.style.height='82px';img.style.maxWidth='none';img.style.objectFit='contain'});
+    document.querySelectorAll('.header .nav').forEach(nav=>{
+      const links=[...nav.querySelectorAll('a')];
+      items.forEach(([href,key],index)=>{
+        const target=href.startsWith('index.html#')
+          ? links.find(a=>a.href.includes('#special-equipment-service'))||links.find(a=>a.dataset.i18n==='navRental')||links.find(a=>a.dataset.i18n==='navCorporate')||links[3]
+          : links.find(a=>a.getAttribute('href')===href);
+        if(!target)return;
+        target.href=href;target.dataset.i18n=key==='rental'?'navRental':`nav${key[0].toUpperCase()}${key.slice(1)}`;
+        const desktop=target.querySelector('.desktop-nav-label'),mobile=target.querySelector('.mobile-nav-label');
+        if(desktop)desktop.textContent=copy[key];
+        if(mobile)mobile.textContent=copy[key];
+        if(!desktop&&!mobile)target.textContent=copy[key];
+        target.style.whiteSpace='nowrap';
+      });
+      nav.querySelectorAll('a').forEach(a=>{if(a.dataset.i18n==='navCorporate'||a.getAttribute('href')==='corporate.html')a.remove()});
+    });
+  };
+  const start=()=>{
+    sync();
+    let ticks=0;const timer=setInterval(()=>{sync();if(++ticks>30)clearInterval(timer)},250);
+    document.querySelectorAll('.header .nav').forEach(nav=>new MutationObserver(()=>sync()).observe(nav,{childList:true,subtree:true,characterData:true}));
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('click',e=>{if(e.target.closest('[data-lang]'))setTimeout(sync,0)});
+  const style=document.createElement('style');style.textContent='.header .brand{min-width:225px!important}.header .brand img{width:225px!important;height:82px!important;max-width:none!important;object-fit:contain!important}@media(max-width:650px){.header .brand{min-width:175px!important}.header .brand img{width:175px!important;height:64px!important}}';document.head.append(style);
+})();
