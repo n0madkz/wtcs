@@ -15,3 +15,15 @@ document.querySelector('.lead-form')?.addEventListener('submit', event => {
   button.innerHTML = 'Заявка отправлена ✓';
   button.disabled = true;
 });
+
+document.querySelectorAll('.brand img, .admin-brand img').forEach(img => {
+  img.src = 'assets/west-training-logo.webp';
+  img.alt = 'West Training Center & Services';
+});
+document.querySelectorAll('.header .nav a').forEach(link => {
+  if (link.getAttribute('href') === 'corporate.html' || link.dataset.i18n === 'navCorporate') {
+    link.href = 'index.html#special-equipment-service';
+    link.dataset.i18n = 'navRental';
+    link.textContent = 'Аренда спецтехники';
+  }
+});
