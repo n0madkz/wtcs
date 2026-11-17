@@ -29,6 +29,7 @@ export async function onRequestPost({ request, env }) {
     await env.WCS_DB.prepare(
       'INSERT INTO requests (id, name, phone, course, description, date, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     ).bind(id, name, phone, course, description, new Date().toLocaleDateString('ru-RU'), 'Новая', Date.now()).run();
+    await notifyTelegram(env, { name, phone, course, description });
     return json({ ok: true, request: { id, name, phone, course, description, status: 'Новая' } }, 201);
   } catch {
     return json({ error: 'Invalid request' }, 400);
@@ -41,6 +42,30 @@ export async function onRequestDelete({ request, env }) {
   if (!id) return json({ error: 'Request id is required' }, 400);
   await env.WCS_DB.prepare('DELETE FROM requests WHERE id = ?').bind(id).run();
   return json({ ok: true });
+}
+
+async function notifyTelegram(env, request) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chatId = env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+  const esc = value => String(value || '—').replace(/[&<>]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[char]));
+  const text = [
+    '<b>Новая заявка — West Training Center &amp; Services</b>',
+    '',
+    `<b>Имя:</b> ${esc(request.name)}`,
+    `<b>Телефон:</b> ${esc(request.phone)}`,
+    `<b>Курс / услуга:</b> ${esc(request.course)}`,
+    `<b>Описание:</b> ${esc(request.description)}`
+  ].join('\n');
+  try {
+    await fetch(`https://api.telegram.org/bot${encodeURIComponent(token)}/sendMessage`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
+    });
+  } catch {
+    // The database record remains the source of truth if Telegram is unavailable.
+  }
 }
 
 async function isAuthorized(request, env) {
