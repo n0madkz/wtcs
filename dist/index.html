@@ -23,6 +23,21 @@
       <div class="languages"><button data-lang="ru">RU</button><button data-lang="kz">KZ</button><button data-lang="en">EN</button></div>
     </div>
   </header>
+  <script>
+    window.setTimeout(function () {
+      document.querySelectorAll('.brand img, .admin-brand img').forEach(function (img) {
+        img.src = 'assets/west-training-logo.webp';
+        img.alt = 'West Training Center & Services';
+      });
+      document.querySelectorAll('.header .nav a').forEach(function (link) {
+        if (link.getAttribute('href') === 'corporate.html' || link.dataset.i18n === 'navCorporate') {
+          link.href = 'index.html#special-equipment-service';
+          link.dataset.i18n = 'navRental';
+          link.textContent = 'Аренда спецтехники';
+        }
+      });
+    }, 2500);
+  </script>
 
   <main id="top">
     <section class="hero"><div class="hero-grid"></div><div class="container hero-content">
