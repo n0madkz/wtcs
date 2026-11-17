@@ -1,0 +1,7 @@
+name = "west-crane-service"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "WCS_DB"
+database_name = "west-crane-service-db"
+database_id = "43c61361-f218-499a-a1e8-23f64b0a1200"
