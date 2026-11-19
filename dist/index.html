@@ -12,10 +12,11 @@
   <link rel="stylesheet" href="pages.css" />
 </head>
 <body>
+  <style>.header .nav{visibility:hidden}.header .phone{visibility:hidden}</style>
   <header class="header">
     <div class="container nav-wrap">
       <a class="brand" href="#top" aria-label="West Crane Service">
-        <img class="brand-logo" src="logo.svg" alt="WEST CRANE SERVICE" />
+        <img class="brand-logo" src="assets/west-training-logo.webp?v=5b39493" width="225" height="82" fetchpriority="high" decoding="async" alt="West Training Center & Services" />
       </a>
       <button class="menu-btn" aria-label="Открыть меню">☰</button>
       <nav class="nav"><a href="courses.html" data-i18n="navCourses">Курсы</a><a href="about.html" data-i18n="navAbout">О компании</a><a href="documents.html" data-i18n="navDocs">Документы</a><a href="corporate.html" data-i18n="navCorporate">Корпоративное обучение</a><a href="contacts.html" data-i18n="navContacts">Контакты</a></nav>
@@ -29,6 +30,11 @@
         img.src = 'assets/west-training-logo.webp?v=bdcf835';
         img.alt = 'West Training Center & Services';
       });
+      document.querySelectorAll('.header .phone').forEach(function (phone) {
+        phone.href = 'tel:+77782148604';
+        var text = phone.querySelector('span:last-child');
+        if (text) text.textContent = '+7 (778) 214-86-04';
+      });
       document.querySelectorAll('.header .nav a').forEach(function (link) {
         if (link.getAttribute('href') === 'corporate.html' || link.dataset.i18n === 'navCorporate') {
           link.href = 'index.html#special-equipment-service';
@@ -36,7 +42,8 @@
           link.textContent = 'Аренда спецтехники';
         }
       });
-    }, 2500);
+      document.querySelectorAll('.header .nav, .header .phone').forEach(function (el) { el.style.visibility = 'visible'; });
+    }, 0);
   </script>
 
   <main id="top">
