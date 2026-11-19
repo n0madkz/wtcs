@@ -161,7 +161,6 @@ function setMeaningfulMobileNavIcons(){const paths=['<path d="M5 5h10a4 4 0 0 1 
         if(desktop)desktop.textContent=copy[key];
         if(mobile)mobile.textContent=copy[key];
         if(!desktop&&!mobile)target.textContent=copy[key];
-        target.style.whiteSpace='nowrap';
       });
       nav.querySelectorAll('a').forEach(a=>{if(a.dataset.i18n==='navCorporate'||a.getAttribute('href')==='corporate.html')a.remove()});
     });
@@ -169,7 +168,6 @@ function setMeaningfulMobileNavIcons(){const paths=['<path d="M5 5h10a4 4 0 0 1 
   const start=()=>{
     sync();
     let ticks=0;const timer=setInterval(()=>{sync();if(++ticks>30)clearInterval(timer)},250);
-    document.querySelectorAll('.header .nav').forEach(nav=>new MutationObserver(()=>sync()).observe(nav,{childList:true,subtree:true,characterData:true}));
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
   document.addEventListener('click',e=>{if(e.target.closest('[data-lang]'))setTimeout(sync,0)});
